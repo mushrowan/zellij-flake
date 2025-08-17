@@ -1,6 +1,6 @@
 {
   inputs = {
-    # nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
     utils.url = "github:numtide/flake-utils";
     zellij = {
       url = "github:zellij-org/zellij";
@@ -15,7 +15,7 @@
     zellij,
   }:
     utils.lib.eachDefaultSystem (system: let
-      pkgs = nixpkgs.legacyPackages.${system};
+      pkgs = import nixpkgs {inherit system;};
     in {
       devShell = with pkgs;
         mkShell {
@@ -30,13 +30,13 @@
           # Remove the `vendored_curl` feature in order to link against the
           # libcurl from nixpkgs instead of the vendored one
           inherit src;
-          inherit (manifest) name version;
-
           postPatch = ''
             substituteInPlace Cargo.toml \
               --replace-fail ', "vendored_curl"' ""
           '';
 
+          name = manifest.name;
+          version = manifest.version;
           cargoLock.lockFile = "${finalAttrs.src}/Cargo.lock";
 
           env.OPENSSL_NO_VENDOR = 1;
