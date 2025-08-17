@@ -23,7 +23,7 @@
           RUST_SRC_PATH = rustPlatform.rustLibSrc;
         };
       defaultPackage = let
-        src =  zellij;
+        src = zellij;
         manifest = (pkgs.lib.importTOML "${src}/Cargo.toml").package;
       in
         pkgs.rustPlatform.buildRustPackage (finalAttrs: {
@@ -34,12 +34,10 @@
             substituteInPlace Cargo.toml \
               --replace-fail ', "vendored_curl"' ""
           '';
-          # cargoVendorDir = finalAttrs.src;
+
           name = manifest.name;
           version = manifest.version;
           cargoLock.lockFile = "${finalAttrs.src}/Cargo.lock";
-          # TODO
-          # src = zellij;
 
           env.OPENSSL_NO_VENDOR = 1;
 
@@ -60,9 +58,7 @@
           ];
 
           nativeInstallCheckInputs = with pkgs; [
-            versionCheckHook
           ];
-          versionCheckProgramArg = "--version";
           doInstallCheck = true;
 
           # Ensure that we don't vendor curl, but instead link against the libcurl from nixpkgs
@@ -80,7 +76,8 @@
               installManPage zellij.1
             ''
             + pkgs.lib.optionalString (pkgs.stdenv.buildPlatform.canExecute pkgs.stdenv.hostPlatform) ''
-              installShellCompletion --cmd $pname \
+
+              installShellCompletion --cmd $name \
                 --bash <($out/bin/zellij setup --generate-completion bash) \
                 --fish <($out/bin/zellij setup --generate-completion fish) \
                 --zsh <($out/bin/zellij setup --generate-completion zsh)
