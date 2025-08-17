@@ -27,16 +27,17 @@
         manifest = (pkgs.lib.importTOML "${src}/Cargo.toml").package;
       in
         pkgs.rustPlatform.buildRustPackage (finalAttrs: {
+          inherit src;
+          inherit (manifest) name version;
+          meta.mainProgram = manifest.name;
+
           # Remove the `vendored_curl` feature in order to link against the
           # libcurl from nixpkgs instead of the vendored one
-          inherit src;
           postPatch = ''
             substituteInPlace Cargo.toml \
               --replace-fail ', "vendored_curl"' ""
           '';
 
-          name = manifest.name;
-          version = manifest.version;
           cargoLock.lockFile = "${finalAttrs.src}/Cargo.lock";
 
           env.OPENSSL_NO_VENDOR = 1;
