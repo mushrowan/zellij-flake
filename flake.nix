@@ -23,19 +23,21 @@
           RUST_SRC_PATH = rustPlatform.rustLibSrc;
         };
       defaultPackage = let
-        manifest = (pkgs.lib.importTOML ./Cargo.toml).package;
+        src =  zellij;
+        manifest = (pkgs.lib.importTOML "${src}/Cargo.toml").package;
       in
         pkgs.rustPlatform.buildRustPackage (finalAttrs: {
           # Remove the `vendored_curl` feature in order to link against the
           # libcurl from nixpkgs instead of the vendored one
+          inherit src;
           postPatch = ''
             substituteInPlace Cargo.toml \
               --replace-fail ', "vendored_curl"' ""
           '';
-          cargoVendorDir = finalAttrs.src;
+          # cargoVendorDir = finalAttrs.src;
           name = manifest.name;
           version = manifest.version;
-          cargoLock.lockFile = ./Cargo.lock;
+          cargoLock.lockFile = "${finalAttrs.src}/Cargo.lock";
           # TODO
           # src = zellij;
 
