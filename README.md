@@ -9,6 +9,10 @@ I still need to set up a watcher to keep the lockfile up-to-date with upstream
 zellij. If you want to make sure that you have the latest upstream, you can set
 up a separate zellij input in your own flake for zellij-flake to follow.
 
+> "Why isn't there already a zellij flake in the official repo?"
+
+[The maintainer has rightly pointed out a few issues which you can read about.](https://github.com/zellij-org/zellij/issues/2008)
+
 ## Todos
 
 - Set up a binary cache
